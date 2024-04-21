@@ -26,6 +26,8 @@ namespace BoxBoxClient.Controllers
         {
             string token = await this.service
                 .GetTokenAsync(email, password);
+            User user = await this.service
+                .GetUserProfileAsync();
             if (token != null)
             {
                 ClaimsIdentity identity =

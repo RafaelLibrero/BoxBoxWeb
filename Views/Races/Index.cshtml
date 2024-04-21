@@ -1,0 +1,96 @@
+﻿@model List<Race>
+
+@{
+    List<Driver> drivers = ViewData["DRIVERS"] as List<Driver>;
+    List<Team> teams = ViewData["TEAMS"] as List<Team>;
+}
+
+<div class="row mb-3">
+    <div class="col-md-10">
+        <h1>Calendario F1 2024</h1>
+    </div>
+    @if (Context.User.IsInRole("1") == true)
+    {
+        <div class="col-md-2 text-right align-self-center">
+            <a asp-action="Create" class="btn btn-success btn-lg">
+                <i class="fas fa-plus-circle"></i> Nueva Carrera
+            </a>
+        </div>
+    }
+</div>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-12 mb-3">
+            <div class="card">
+                <div class="row no-gutters">
+                    <div class="col-md-6">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.RaceName
+                                @if (Context.User.IsInRole("1") == true)
+                                {
+                                    <div class="btn-group" role="group" aria-label="Acciones">
+                                        <a asp-controller="Races" asp-action="Edit" asp-route-raceId="@item.RaceId" class="btn btn-outline-primary btn-sm" style="margin-right: 5px;">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form asp-controller="Races" asp-action="Delete" asp-route-raceId="@item.RaceId" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta carrera?');">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                            </h5>
+                            <p class="card-text text-danger" style="font-size: 18px; font-weight: bold">
+                                @item.StartDate.ToString("dd")-@item.EndDate.ToString("dd 'de' MMMM").ToUpper()
+                            </p>
+                            <p class="card-text">
+                                <i class="fas fa-map-marker-alt" style="color: red; opacity: 0.7;"></i> @item.Location.ToUpper()
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <img src="@item.Image" class="card-img" alt="Imagen de la Carrera">
+                    </div>
+                    @{
+                        var driver = drivers?.FirstOrDefault(t => t.DriverID == item.WinnerDriverId);
+                        
+                    }
+                    @if (driver != null)
+                    {
+                        var team = teams?.FirstOrDefault(t => t.TeamId == driver.TeamID);
+                        <div class="col-md-3 text-center">
+                            <h5 class="card-title">
+                                Ganador: @driver.DriverName
+                                <img src="@driver.Flag" class="card-img" alt="Bandera" style="width: auto; height: 25px; object-fit: contain;">
+                            </h5>
+                            <div class="row align-items-center justify-content-center">
+                                <div class="col-md-2">
+                                    <h4 class="card-text" style="white-space: nowrap;">@driver.CarNumber</h4>
+                                </div>
+                                <div class="col-md-3">
+                                    <img src="@driver.Imagen" class="card-img" alt="Driver Image" style="width: auto; height: 75px; object-fit: contain;" />
+                                </div>
+                            </div>
+                        
+                        <br/>
+                        @if (team != null)
+                        {
+                            <div class="row align-items-center justify-content-center">
+                                <div class="col-md-4">
+                                    <h6 class="card-text" style="white-space: nowrap;">@team.TeamName</h6>
+                                </div>
+                                <div class="col-md-2 text-right">
+                                    <img src="@team.Logo" class="card-img" alt="Team Image" style="width: auto; height: 25px; object-fit: contain;" />
+                                </div>
+                            </div>
+                        }
+                        </div>
+                        }
+                        
+                </div>
+            </div>
+        </div>
+    }
+</div>

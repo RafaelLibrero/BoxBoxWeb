@@ -1,0 +1,61 @@
+﻿@using System.Security.Claims
+
+@{
+    List<Driver> drivers = ViewData["DRIVERS"] as List<Driver>;
+    List<Team> teams = ViewData["TEAMS"] as List<Team>;
+}
+
+<h1 class="mb-4">Mi Perfil</h1>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Información del Usuario</h5>
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Nombre de usuario:</strong>
+                <span>@Context.User.Identity.Name</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Correo electrónico:</strong>
+                <span>@Context.User.FindFirstValue(ClaimTypes.Email)</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Equipo Favorito:</strong>
+                @{
+                    var equipoFavorito = teams.FirstOrDefault(t => t.TeamId.ToString() == Context.User.FindFirstValue("EquipoFavorito"));
+                    if (equipoFavorito != null)
+                    {
+                        <span>@equipoFavorito.TeamName</span>
+                    }
+                }
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Piloto Favorito:</strong>
+                @{
+                    var pilotoFavorito = drivers.FirstOrDefault(d => d.DriverID.ToString() == Context.User.FindFirstValue("PilotoFavorito"));
+                    if (pilotoFavorito != null)
+                    {
+                        <span>@pilotoFavorito.DriverName</span>
+                    }
+                }
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Fecha de Registro:</strong>
+                <span>@Context.User.FindFirstValue("FechaRegistro")</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Último Acceso:</strong>
+                <span>@Context.User.FindFirstValue("UltimoAcceso")</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Foto de Perfil:</strong>
+                <span><img src="@ViewData["ProfilePicture"]" alt="Foto de Perfil" style="max-width: 200px; max-height: 200px;"></span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+<a asp-controller="Users" asp-action="EditPerfil" class="btn btn-primary">
+    Editar Perfil
+</a>

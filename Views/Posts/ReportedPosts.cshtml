@@ -1,0 +1,27 @@
+﻿@model List<Post>
+
+<h1>Reportes</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Mensaje
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @item.Text
+                    <form asp-controller="Posts" asp-action="Delete" asp-route-postId="@item.PostId" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este post?');">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

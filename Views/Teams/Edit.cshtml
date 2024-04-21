@@ -1,0 +1,33 @@
+﻿@model Team
+
+<h1>Nueva Escudería</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <input asp-for="TeamId" type="hidden" value="@Model.TeamId" />
+            <div class="form-group">
+                <label asp-for="TeamName" class="control-label">Nombre</label>
+                <input asp-for="TeamName" class="form-control" value="@Model.TeamName" />
+                <span asp-validation-for="TeamName" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label class="control-label">Logo</label>
+                <img src="@ViewData["LOGO"]" style="max-width: 100px; max-height: 100px" />
+                <input type="file" name="imagen" class="form-control-file" value="@Model.Logo" readonly />
+                <span class="text-danger"></span>
+            </div>
+            <input asp-for="Logo" value="@Model.Logo" type="hidden" />
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Modificar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

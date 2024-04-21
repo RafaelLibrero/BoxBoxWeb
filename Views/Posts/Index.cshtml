@@ -1,0 +1,176 @@
+﻿@model List<Post>
+
+@{
+    List<User> usuarios = ViewData["Usuarios"] as List<User>;
+    List<Driver> drivers = ViewData["DRIVERS"] as List<Driver>;
+    List<Team> teams = ViewData["TEAMS"] as List<Team>;
+}
+
+<div class="forum-container">
+    <div class="forum-header">
+        <h1>@ViewData["Title"]</h1>
+        <a asp-action="Create" asp-route-conversationId="@ViewData["CONVERSATIONID"]" class="btn btn-primary">Responder</a>
+    </div>
+
+    <div>
+        <ul class="list-group list-group-horizontal">
+            
+            
+            @if ((int)ViewData["ANTERIOR"] -1 != (int)ViewData["POSICION"])
+            {
+                <li class="list-group-item">
+                    <a asp-controller="Posts"
+                       asp-action="Index"
+                       asp-route-posicion="@ViewData["ANTERIOR"]"
+                       asp-route-conversationId="@ViewData["CONVERSATIONID"]">
+                        @ViewData["ANTERIOR"]
+                    </a>
+                </li>
+            }
+            
+            
+            @if ((int)ViewData["SIGUIENTE"] + 1 != (int)ViewData["POSICION"])
+            {
+                <li class="list-group-item">
+                    <a asp-controller="Posts"
+                       asp-action="Index"
+                       asp-route-posicion="@ViewData["SIGUIENTE"]"
+                       asp-route-conversationId="@ViewData["CONVERSATIONID"]">
+                        @ViewData["SIGUIENTE"]
+                    </a>
+                </li>
+            }
+            
+        </ul>
+    </div>
+
+    <div class="forum-body">
+        <div class="forum-content">
+            @foreach (var post in Model)
+            {
+                <div class="forum-post" id="@post.PostId">
+                    <div class="post-meta">
+                        @{
+                            var usuario = usuarios?.FirstOrDefault(u => u.UserId == post.UserId);
+                            if (usuario != null)
+                            {
+                                <div class="post-meta d-flex align-items-center">
+                                    <div class="profile-picture">
+                                        <img src="@usuario.ProfilePicture" alt="Profile Picture" class="img-fluid">
+                                    </div>
+                                    <div class="user-info">
+                                        <a asp-controller="Users" asp-action="Perfil" asp-route-userId="@usuario.UserId">
+                                            <h3 class="ml-2">@usuario.UserName</h3>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <span>Usuario desconocido</span>
+                            }
+                        }
+                        <div class="post-date">@post.CreatedAt.ToString("dd/MM/yyyy")</div>
+                    </div>
+                    <div class="post-content">
+                        
+                        <p>@post.Text</p>
+                    </div>
+                    <div class="post-actions">
+                        <form method="post" asp-controller="Posts" asp-action="ReportPost" asp-route-postId="@post.PostId">
+                            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas reportar este post?')">
+                                <i class="fas fa-flag"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .forum-container {
+        margin: 20px;
+    }
+
+    .forum-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .forum-body {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .forum-sidebar {
+        flex: 1;
+        margin-right: 20px;
+    }
+
+        .forum-sidebar h2 {
+            margin-bottom: 10px;
+        }
+
+        .forum-sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+            .forum-sidebar ul li {
+                margin-bottom: 5px;
+            }
+
+    .forum-content {
+        flex: 3;
+    }
+
+    .forum-post {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .post-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .profile-picture {
+        width: 100px;
+        height: 100px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 50%;
+    }
+
+    .profile-picture img{
+            display: inline;
+            margin: 0 auto;
+            height: 100%;
+            width: auto;
+    }
+
+    .post-date {
+        color: #888;
+    }
+
+    .post-content {
+        margin-bottom: 10px;
+    }
+
+    .post-actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+        .post-actions .btn {
+            margin-left: 10px;
+        }
+</style>

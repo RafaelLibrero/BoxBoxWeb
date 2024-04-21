@@ -1,0 +1,95 @@
+﻿@model List<VTopic>
+
+@{
+    ViewData["Title"] = "Index";
+    List<Post> lastMessages = ViewData["LastMessages"] as List<Post>;
+    List<User> usuarios = ViewData["Usuarios"] as List<User>;
+}
+
+<div class="row mb-3">
+    <div class="col-md-10">
+        <h1>BoxBox</h1>
+    </div>
+    @if (Context.User.IsInRole("1") == true)
+    {
+        <div class="col-md-2 text-right align-self-center">
+            <a asp-action="Create" class="btn btn-success btn-lg">
+                <i class="fas fa-plus-circle"></i> Nueva Sección
+            </a>
+        </div>
+    }
+</div>
+
+<div>
+    <table class="table table-bordered">
+        <thead class="thead thead-dark">
+            <tr>
+                <th>Foro</th>
+                <th style="text-align: center">Temas</th>
+                <th style="text-align: center">Mensajes</th>
+                <th style="text-align: center">Último mensaje</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                
+                <tr>
+                    <td>
+                        <h5><a asp-controller="Conversations" 
+                            asp-action="Index" 
+                            asp-route-topicId="@item.TopicId">
+                            <strong>@item.Title</strong> 
+                            </a>
+                            @if (Context.User.IsInRole("1") == true)
+                            {
+                                <div class="btn-group" role="group" aria-label="Acciones">
+                                    <a asp-controller="Topics" asp-action="Edit" asp-route-topicId="@item.TopicId" class="btn btn-outline-primary btn-sm" style="margin-right: 5px;">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form asp-controller="Topics" asp-action="Delete" asp-route-topicId="@item.TopicId" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este tema?');">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+
+
+                        </h5>
+                        <p>@item.Description</p>
+                    </td>
+                    <td style="text-align: center">@item.Conversations</td>
+                    <td style="text-align: center">@item.Posts</td>
+                    <td style="vertical-align: top; text-align: right">
+                        @if (lastMessages != null && item.LastMessage != 0)
+                        {
+                            var lastMessage = lastMessages.FirstOrDefault(m => m.PostId == item.LastMessage);
+                            if (lastMessage != null)
+                            {
+                                var usuario = usuarios.FirstOrDefault(m => m.UserId == lastMessage.UserId);
+                                <p style="margin-bottom: 2px"><strong>@Truncate(lastMessage.Text, 30)</strong></p>
+                                <p style="font-size: smaller; margin-bottom: 2px;">@lastMessage.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
+                                <p style="font-size: smaller; margin-bottom: 0;">
+                                    por <a asp-controller="Users" asp-action="Perfil" asp-route-userId="@usuario.UserId">@usuario.UserName</a>
+                                </p>
+                                
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    @functions {
+        public string Truncate(string value, int maxLength)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+            return value.Length <= maxLength ? value : value.Substring(0, maxLength) + "...";
+        }
+    }
+
+</script>

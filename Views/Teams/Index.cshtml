@@ -1,0 +1,76 @@
+﻿@model List<Team>
+
+@{
+    List<Driver> drivers = ViewData["DRIVERS"] as List<Driver>;
+}
+
+<div class="row mb-3">
+    <div class="col-md-9">
+        <h1>Escuderías F1 2024</h1>
+    </div>
+    @if (Context.User.IsInRole("1") == true)
+    {
+        <div class="col-md-3 text-right">
+            <a asp-action="Create" class="btn btn-success btn-lg">
+                <i class="fas fa-plus-circle"></i> Nueva Escudería
+            </a>
+        </div>
+    }
+</div>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-3">
+            <div class="card mb-3">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <h5 class="card-title">
+                        @item.TeamName
+                        @if (Context.User.IsInRole("1") == true)
+                        {
+                            <div class="btn-group" role="group" aria-label="Acciones">
+                                <a asp-controller="Teams" asp-action="Edit" asp-route-teamId="@item.TeamId" class="btn btn-outline-primary btn-sm" style="margin-right: 5px;">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form asp-controller="Teams" asp-action="Delete" asp-route-teamId="@item.TeamId" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este equipo?');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </h5>
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <img src="@item.Logo" class="card-img" alt="Logo del Equipo" style="width: auto; height: 100px; object-fit: contain;" />
+                        </div>
+                    </div>
+                    @{
+                        var driversTeam = drivers?.Where(d => d.TeamID == item.TeamId).ToList();
+                    }
+                    @if (driversTeam != null && driversTeam.Any())
+                    {
+                        <div class="row align-items-center mt-2">
+                            <div class="col-md-12">
+                                @foreach (var driver in driversTeam)
+                                {
+                                    <img src="@driver.Imagen" class="driver-image" />
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .driver-image {
+        width: auto; /* Ajusta el ancho según sea necesario */
+        height: 100px; /* Mantén la proporción de la imagen */
+        margin-right: 10px; /* Ajusta el margen entre las imágenes */
+    }
+</style>

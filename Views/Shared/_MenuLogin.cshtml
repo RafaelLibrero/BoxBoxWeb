@@ -1,0 +1,32 @@
+﻿@using System.Security.Claims
+
+<div class="d-flex align-items-center">
+    
+    <ul class="navbar-nav ms-auto">
+        @if (Context.User.Identity.IsAuthenticated == false)
+        {
+            <li class="nav-item">
+                <a asp-controller="Users"
+                   asp-action="MiPerfil"
+                   class="nav-link">
+                    Log In
+                </a>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item dropdown">
+                <div class="dropdown">
+                    <button class="btn nav-link dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @Context.User.Identity.Name
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" asp-controller="Users" asp-action="MiPerfil">Mi Perfil</a>
+                        <a class="dropdown-item" asp-controller="Auth" asp-action="Logout">Logout</a>
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+</div>
+

@@ -1,3 +1,4 @@
+using BoxBoxClient.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,10 +17,15 @@ builder.Services.AddAuthentication(options =>
     CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme =
     CookieAuthenticationDefaults.AuthenticationScheme;
-}).AddCookie();
+}).AddCookie(config =>
+{
+    config.AccessDeniedPath = "/Auth/ErrorAcceso";
+});
 
 builder.Services.AddControllersWithViews
     (options => options.EnableEndpointRouting = false);
+
+builder.Services.AddTransient<ServiceApiBoxBox>();
 
 var app = builder.Build();
 

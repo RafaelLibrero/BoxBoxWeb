@@ -1,0 +1,48 @@
+﻿@model User
+
+@{
+    List<Driver> drivers = ViewData["DRIVERS"] as List<Driver>;
+    List<Team> teams = ViewData["TEAMS"] as List<Team>;
+}
+
+<h1 class="mb-4">Perfil de @Model.UserName</h1>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Información del Usuario</h5>
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Equipo Favorito:</strong>
+                @{
+                    var equipoFavorito = teams.FirstOrDefault(t => t.TeamId == Model.TeamId);
+                    if (equipoFavorito != null)
+                    {
+                        <span>@equipoFavorito.TeamName</span>
+                    }
+                }
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Piloto Favorito:</strong>
+                @{
+                    var pilotoFavorito = drivers.FirstOrDefault(d => d.DriverID == Model.DriverId);
+                    if (pilotoFavorito != null)
+                    {
+                        <span>@pilotoFavorito.DriverName</span>
+                    }
+                }
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Fecha de Registro:</strong>
+                <span>@Model.RegistrationDate.ToString("dd/MM/yyyy")</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Último Acceso:</strong>
+                <span>@Model.LastAccess</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Foto de Perfil:</strong>
+                <span><img src="@Model.ProfilePicture" alt="Foto de Perfil" style="max-width: 200px; max-height: 200px;"></span>
+            </li>
+        </ul>
+    </div>
+</div>

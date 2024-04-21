@@ -1,0 +1,30 @@
+﻿﻿@using System.Security.Claims
+
+@model Conversation
+
+<h1>Nuevo tema</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" class="needs-validation" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label">Título</label>
+                <input asp-for="Title" class="form-control" required />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <input type="hidden" name="topicId" value="@ViewData["TopicId"]" />
+            <input type="hidden" name="userId" value="@Context.User.FindFirstValue(ClaimTypes.NameIdentifier)" />
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Crear</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

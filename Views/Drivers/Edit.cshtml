@@ -1,0 +1,58 @@
+﻿@model Driver
+
+@{
+    List<Team> teams = ViewData["TEAMS"] as List<Team>;
+}
+
+<h1>Nuevo Piloto</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <input asp-for="DriverID" type="hidden" value="@Model.DriverID" />
+            <div class="form-group">
+                <label asp-for="DriverName" class="control-label">Nombre y apellido</label>
+                <input asp-for="DriverName" class="form-control" value="@Model.DriverName"/>
+                <span asp-validation-for="DriverName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CarNumber" class="control-label">Nº de coche</label>
+                <input asp-for="CarNumber" class="form-control" value="@Model.CarNumber"/>
+                <span asp-validation-for="CarNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TeamID" class="control-label">Escudería</label>
+                <select asp-for="TeamID" class="form-control">
+                    @foreach (Team team in teams)
+                    {
+                        <option value="@team.TeamId" (@Model.TeamID = team.TeamId)>@team.TeamName</option>
+                    }
+                </select>
+            </div>
+            <br />
+            <div class="form-group">
+                <label class="control-label">Bandera</label>
+                <img src="@ViewData["BANDERA"]" style="max-width: 100px; max-height: 100px" />
+                <input type="file" name="bandera" class="form-control-file" value="@Model.Flag" readonly />
+                <span class="text-danger"></span>
+            </div>
+            <input asp-for="Flag" value="@Model.Flag" type="hidden"/> 
+            <div class="form-group">
+                <label class="control-label">Imagen</label>
+                <img src="@ViewData["FOTO"]" style="max-width: 100px; max-height: 100px" />
+                <input type="file" name="foto" class="form-control-file" value="@Model.Imagen" readonly />
+                <span class="text-danger"></span>
+            </div>
+            <input asp-for="Imagen" value="@Model.Imagen" type="hidden" />
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Modificar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
