@@ -8,29 +8,16 @@ namespace BoxBox.Controllers
     public class TeamsController : Controller
     {
         private ServiceApiBoxBox service;
-        private HelperPathProvider helperPathProvider;
-        private HelperUploadFiles helperUploadFiles;
 
-        public TeamsController(ServiceApiBoxBox service, HelperPathProvider helperPathProvider, HelperUploadFiles helperUploadFiles)
+        public TeamsController(ServiceApiBoxBox service)
         {
             this.service = service;
-            this.helperPathProvider = helperPathProvider;
-            this.helperUploadFiles = helperUploadFiles;
         }
 
         public async Task<IActionResult> Index()
         {
             List<Team> teams = await this.service.GetTeamsAsync();
             List<Driver> drivers = await this.service.GetDriversAsync();
-            foreach (Team team in teams)
-            {
-                team.Logo = this.helperPathProvider.MapUrlPath(team.Logo, Folders.Images);
-            }
-            foreach (Driver driver in drivers)
-            {
-                driver.Flag = this.helperPathProvider.MapUrlPath(driver.Flag, Folders.Images);
-                driver.Imagen = this.helperPathProvider.MapUrlPath(driver.Imagen, Folders.Images);
-            }
             ViewData["DRIVERS"] = drivers;
             return View(teams);
         }

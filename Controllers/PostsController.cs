@@ -9,12 +9,10 @@ namespace BoxBox.Controllers
     public class PostsController : Controller
     {
         private ServiceApiBoxBox service;
-        private HelperPathProvider helperPathProvider;
 
-        public PostsController(ServiceApiBoxBox service, HelperPathProvider helperPathProvider)
+        public PostsController(ServiceApiBoxBox service)
         {
             this.service = service;
-            this.helperPathProvider = helperPathProvider;
         }
 
         public async Task<IActionResult>Index(int? posicion, int conversationId)

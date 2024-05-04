@@ -8,14 +8,10 @@ namespace BoxBox.Controllers
     public class RacesController : Controller
     {
         private ServiceApiBoxBox service;
-        private HelperPathProvider helperPathProvider;
-        private HelperUploadFiles helperUploadFiles;
 
-        public RacesController(ServiceApiBoxBox service, HelperPathProvider helperPathProvider, HelperUploadFiles helperUploadFiles)
+        public RacesController(ServiceApiBoxBox service)
         {
             this.service = service;
-            this.helperPathProvider = helperPathProvider;
-            this.helperUploadFiles = helperUploadFiles;
         }
 
         public async Task<IActionResult> Index()
@@ -24,23 +20,8 @@ namespace BoxBox.Controllers
             List<Driver> drivers = await this.service.GetDriversAsync();
             List<Team> teams = await this.service.GetTeamsAsync();
            
-            foreach (Team team in teams)
-            {
-                team.Logo = this.helperPathProvider.MapUrlPath(team.Logo, Folders.Images);
-            }
-            foreach (Driver driver in drivers)
-            {
-                driver.Flag = this.helperPathProvider.MapUrlPath(driver.Flag, Folders.Images);
-                driver.Imagen = this.helperPathProvider.MapUrlPath(driver.Imagen, Folders.Images);
-            }
-
             ViewData["DRIVERS"] = drivers;
             ViewData["TEAMS"] = teams;
-
-            foreach (Race race in races)
-            {
-                race.Image = this.helperPathProvider.MapUrlPath(race.Image, Folders.Images);
-            }
 
             return View(races);
         }

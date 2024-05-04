@@ -5,28 +5,22 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using BoxBox.Helpers;
 
 namespace BoxBox.Controllers
 {
     public class UsersController : Controller
     {
         private ServiceApiBoxBox service;
-        private HelperUploadFiles helperUploadFiles;
-        private HelperPathProvider helperPathProvider;
 
-        public UsersController(ServiceApiBoxBox service, HelperUploadFiles helperUploadFiles, HelperPathProvider helperPathProvider)
+        public UsersController(ServiceApiBoxBox service)
         {
             this.service = service;
-            this.helperUploadFiles = helperUploadFiles;
-            this.helperPathProvider = helperPathProvider;
         }
 
         [AuthorizeUsers]
         public async Task<IActionResult> Perfil(int userId)
         {
             User user = await this.service.FindUserAsync(userId);
-            user.ProfilePicture = this.helperPathProvider.MapUrlPath(user.ProfilePicture, Folders.Uploads);
             List<Driver> drivers = await this.service.GetDriversAsync();
             List<Team> teams = await this.service.GetTeamsAsync();
             ViewData["DRIVERS"] = drivers;
@@ -39,7 +33,6 @@ namespace BoxBox.Controllers
         {
             List<Driver> drivers = await this.service.GetDriversAsync();
             List<Team> teams = await this.service.GetTeamsAsync();
-            ViewData["ProfilePicture"] = this.helperPathProvider.MapUrlPath(HttpContext.User.FindFirstValue("FotoPerfil"), Folders.Uploads);
             ViewData["DRIVERS"] = drivers;
             ViewData["TEAMS"] = teams;
             return View();
@@ -51,7 +44,6 @@ namespace BoxBox.Controllers
             int userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
             User user = await this.service.FindUserAsync(userId);
 
-            user.ProfilePicture = this.helperPathProvider.MapUrlPath(user.ProfilePicture, Folders.Uploads);
             List<Driver> drivers = await this.service.GetDriversAsync();
             List<Team> teams = await this.service.GetTeamsAsync();
             ViewData["DRIVERS"] = drivers;

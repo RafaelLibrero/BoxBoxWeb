@@ -8,28 +8,15 @@ namespace BoxBox.Controllers
     public class DriversController : Controller
     {
         private ServiceApiBoxBox service;
-        private HelperPathProvider helperPathProvider;
-        private HelperUploadFiles helperUploadFiles;
 
-        public DriversController(ServiceApiBoxBox service, HelperPathProvider helperPathProvider, HelperUploadFiles helperUploadFiles)
+        public DriversController(ServiceApiBoxBox service)
         {
             this.service = service;
-            this.helperPathProvider = helperPathProvider;
-            this.helperUploadFiles = helperUploadFiles;
         }
         public async Task<IActionResult> Index()
         {
             List<Driver> drivers = await this.service.GetDriversAsync();
             List<Team> teams = await this.service.GetTeamsAsync();
-            foreach(Driver driver in drivers)
-            {
-                driver.Flag = this.helperPathProvider.MapUrlPath(driver.Flag, Folders.Images);
-                driver.Imagen = this.helperPathProvider.MapUrlPath(driver.Imagen, Folders.Images);
-            }
-            foreach(Team team in teams)
-            {
-                team.Logo = this.helperPathProvider.MapUrlPath(team.Logo, Folders.Images);
-            }
             ViewData["TEAMS"] = teams;
             return View(drivers);
         }
