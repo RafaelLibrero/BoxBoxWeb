@@ -43,7 +43,7 @@
                                 }
                             </h5>
                             <p class="card-text text-danger" style="font-size: 18px; font-weight: bold">
-                                @item.StartDate.ToString("dd")-@item.EndDate.ToString("dd 'de' MMMM").ToUpper()
+                                @item.StartDate.GetValueOrDefault().ToString("dd")-@item.EndDate.GetValueOrDefault().ToString("dd 'de' MMMM").ToUpper()
                             </p>
                             <p class="card-text">
                                 <i class="fas fa-map-marker-alt" style="color: red; opacity: 0.7;"></i> @item.Location.ToUpper()

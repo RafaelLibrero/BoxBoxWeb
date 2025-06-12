@@ -8,10 +8,12 @@ namespace BoxBox.Controllers
     public class RacesController : Controller
     {
         private ServiceApiBoxBox service;
+        private readonly AzureBlobStorageService _blobService;
 
-        public RacesController(ServiceApiBoxBox service)
+        public RacesController(ServiceApiBoxBox service, AzureBlobStorageService blobService)
         {
             this.service = service;
+            _blobService = blobService;
         }
 
         public async Task<IActionResult> Index()
@@ -38,7 +40,10 @@ namespace BoxBox.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Race race, IFormFile circuit)
         {
-            await this.helperUploadFiles.UploadFileAsync(circuit, Folders.Images);
+            using (Stream stream = circuit.OpenReadStream())
+            {
+                await _blobService.UploadBlobAsync(circuit.FileName, stream);
+            }
 
             race.Image = circuit.FileName;
 
@@ -54,7 +59,7 @@ namespace BoxBox.Controllers
             List<Driver> drivers = await this.service.GetDriversAsync();
             ViewData["DRIVERS"] = drivers;
 
-            ViewData["CIRCUIT"] = this.helperPathProvider.MapUrlPath(race.Image, Folders.Images);
+            ViewData["CIRCUIT"] = _blobService.GetBlobUrl(race.Image);
 
             return View(race);
         }
@@ -65,7 +70,10 @@ namespace BoxBox.Controllers
         {
             if (circuit != null)
             {
-                await this.helperUploadFiles.UploadFileAsync(circuit, Folders.Images);
+                using (Stream stream = circuit.OpenReadStream())
+                {
+                    await _blobService.UploadBlobAsync(circuit.FileName, stream);
+                }
                 race.Image = circuit.FileName;
             }
             

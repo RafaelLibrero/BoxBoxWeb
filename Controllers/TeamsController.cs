@@ -8,10 +8,12 @@ namespace BoxBox.Controllers
     public class TeamsController : Controller
     {
         private ServiceApiBoxBox service;
+        private readonly AzureBlobStorageService _blobService;
 
-        public TeamsController(ServiceApiBoxBox service)
+        public TeamsController(ServiceApiBoxBox service, AzureBlobStorageService blobService)
         {
             this.service = service;
+            _blobService = blobService;
         }
 
         public async Task<IActionResult> Index()
@@ -32,8 +34,11 @@ namespace BoxBox.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Team team, IFormFile imagen)
         {
-            await this.helperUploadFiles.UploadFileAsync(imagen, Folders.Images);
-
+            using (Stream stream = imagen.OpenReadStream())
+            {
+                await _blobService.UploadBlobAsync(imagen.FileName, stream);
+            }
+           
             team.Logo = imagen.FileName;
 
             await this.service.CreateTeamAsync(team);
@@ -46,7 +51,7 @@ namespace BoxBox.Controllers
         {
             Team team = await this.service.FindTeamAsync(teamId);
 
-            ViewData["LOGO"] = this.helperPathProvider.MapUrlPath(team.Logo, Folders.Images);
+            ViewData["LOGO"] = _blobService.GetBlobUrl(team.Logo);
 
             return View(team);
         }
@@ -57,7 +62,10 @@ namespace BoxBox.Controllers
         {
             if (imagen != null)
             {
-                await this.helperUploadFiles.UploadFileAsync(imagen, Folders.Images);
+                using (Stream stream = imagen.OpenReadStream())
+                {
+                    await _blobService.UploadBlobAsync(imagen.FileName, stream);
+                }
                 team.Logo = imagen.FileName;
             }
             await this.service.UpdateTeamAsync(team);

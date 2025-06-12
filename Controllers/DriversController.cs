@@ -8,10 +8,12 @@ namespace BoxBox.Controllers
     public class DriversController : Controller
     {
         private ServiceApiBoxBox service;
+        private readonly AzureBlobStorageService _blobService;
 
-        public DriversController(ServiceApiBoxBox service)
+        public DriversController(ServiceApiBoxBox service, AzureBlobStorageService blobService)
         {
             this.service = service;
+            _blobService = blobService;
         }
         public async Task<IActionResult> Index()
         {
@@ -33,8 +35,15 @@ namespace BoxBox.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Driver driver, IFormFile foto, IFormFile bandera)
         {
-            await this.helperUploadFiles.UploadFileAsync(foto, Folders.Images);
-            await this.helperUploadFiles.UploadFileAsync(bandera, Folders.Images);
+            using (Stream stream = foto.OpenReadStream())
+            {
+                await _blobService.UploadBlobAsync(foto.FileName, stream);
+            }
+            
+            using (Stream stream = bandera.OpenReadStream())
+            {
+                await _blobService.UploadBlobAsync(bandera.FileName, stream);
+            }
             
             driver.Imagen = foto.FileName;
             driver.Flag = bandera.FileName;
@@ -50,8 +59,8 @@ namespace BoxBox.Controllers
             Driver driver = await this.service.FindDriverAsync(driverId);
             List<Team> teams = await this.service.GetTeamsAsync();
             ViewData["TEAMS"] = teams;
-            ViewData["BANDERA"] = this.helperPathProvider.MapUrlPath(driver.Flag, Folders.Images);
-            ViewData["FOTO"] = this.helperPathProvider.MapUrlPath(driver.Imagen, Folders.Images);
+            ViewData["BANDERA"] = _blobService.GetBlobUrl(driver.Flag);
+            ViewData["FOTO"] = _blobService.GetBlobUrl(driver.Imagen);
 
             return View(driver);
         }
@@ -62,13 +71,19 @@ namespace BoxBox.Controllers
         {
             if (foto != null)
             {
-                await this.helperUploadFiles.UploadFileAsync(foto, Folders.Images);
+                using (Stream stream = foto.OpenReadStream())
+                {
+                    await _blobService.UploadBlobAsync(foto.FileName, stream);
+                }
                 driver.Imagen = foto.FileName;
             }
 
-            if(bandera != null)
+            if (bandera != null)
             {
-                await this.helperUploadFiles.UploadFileAsync(bandera, Folders.Images);
+                using (Stream stream = bandera.OpenReadStream())
+                {
+                    await _blobService.UploadBlobAsync(bandera.FileName, stream);
+                }
                 driver.Flag = bandera.FileName;
             }
 

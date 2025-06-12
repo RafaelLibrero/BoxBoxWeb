@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -21,13 +21,12 @@
     <None Include="Views\_ViewStart.cshtml" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\BoxBoxModels\BoxBoxModels.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.7.0" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.24.1" />
+		<PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.8.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
 
 </Project>

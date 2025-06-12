@@ -11,10 +11,12 @@ namespace BoxBox.Controllers
     public class UsersController : Controller
     {
         private ServiceApiBoxBox service;
+        private readonly AzureBlobStorageService _blobService;
 
-        public UsersController(ServiceApiBoxBox service)
+        public UsersController(ServiceApiBoxBox service, AzureBlobStorageService blobService)
         {
             this.service = service;
+            _blobService = blobService;
         }
 
         [AuthorizeUsers]
@@ -57,7 +59,10 @@ namespace BoxBox.Controllers
         {
             if (foto != null)
             {
-                await this.helperUploadFiles.UploadFileAsync(foto, Folders.Uploads);
+                using (Stream stream = foto.OpenReadStream())
+                {
+                    await _blobService.UploadBlobAsync(foto.FileName, stream);
+                }
                 usuario.ProfilePicture = foto.FileName;
             }
 

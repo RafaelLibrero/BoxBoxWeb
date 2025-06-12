@@ -9,10 +9,12 @@ namespace BoxBox.Controllers
     public class PostsController : Controller
     {
         private ServiceApiBoxBox service;
+        private readonly AzureBlobStorageService _blobService;
 
-        public PostsController(ServiceApiBoxBox service)
+        public PostsController(ServiceApiBoxBox service, AzureBlobStorageService blobService)
         {
             this.service = service;
+            _blobService = blobService;
         }
 
         public async Task<IActionResult>Index(int? posicion, int conversationId)
@@ -21,7 +23,7 @@ namespace BoxBox.Controllers
             {
                 posicion = 1;
             }
-            PostsPaginado posts = await this.repo.GetPostsConversationAsync(posicion.Value, conversationId);
+            PostsPaginado posts = await this.service.GetPostsConversationAsync(posicion.Value, conversationId);
             ViewData["REGISTROS"] = posts.Registros;
             int siguiente = posicion.Value + 1;
             if (siguiente > posts.Registros)
@@ -50,7 +52,7 @@ namespace BoxBox.Controllers
             foreach (var post in posts.Posts)
             {
                 User usuario = await this.service.FindUserAsync(post.UserId);
-                usuario.ProfilePicture = this.helperPathProvider.MapUrlPath(usuario.ProfilePicture, Folders.Uploads);
+                usuario.ProfilePicture = _blobService.GetBlobUrl(usuario.ProfilePicture);
                 users.Add(usuario);
             }
             ViewData["Usuarios"] = users;
